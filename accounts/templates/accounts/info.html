@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Info{% endblock title %}
+{% block content %}
+<h1>Your Account Information</h1>
+<fieldset>
+    <legend>Account Information:</legend>
+    <div>
+        <h2>Username: {{username}}</h2>
+        <h2>Password: {{pass}}</h2>
+    </div>
+</fieldset>
+<h3>Please Take Note, you won't be able to see this page again</h3>
+<h4>In order to see your account number, Please login to your account</h4>
+
+<a href = {% url 'login' %}>Login Page</a>
+{% endblock content %}

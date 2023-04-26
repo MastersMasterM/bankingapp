@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Panel{% endblock title %}
+
+{% block content %}
+    <h1>Welcome, {{f_name|title}} {{l_name|title}}</h1>
+    <fieldset>
+    <h2> Account Number: {{acc_num}} </h2>
+    <h3> Balance: {{balance}} </h3>
+    </fieldset>
+
+    <script language="JavaScript">
+        function subt() {
+            var to = document.getElementById("to").value;
+            var amount = document.getElementById("amount").value;
+            var base = "/dashboard/";
+            window.location.href=base.concat("transfer/","{{user}}","/","{{acc_num}}","/",to,"/",amount);
+        }
+    </script>
+
+    <fieldset>
+        <legend>Transfer</legend>
+        <div class="container">
+            <lable><b>From:</b> {{acc_num}}</label>
+            <br>
+            <label for="to"><b>To:</b></label>
+            <input type="text" placeholder="Enter The Destination Cart" Id = "to" name="to" required>
+            <br>
+            <label for="amount"><b>Amount:</b></label>
+            <input type="text" placeholder="Enter The Amount" Id = "amount" name="amount" required>
+        </div>
+        <div>
+            <a Id = "subm" href = "#" onclick="subt()"> Submit </a>
+        </div>
+    </fieldset>
+    <script language="JavaScript">
+
+        function sub() {
+            var contact = document.getElementById("amountw").value;
+            var base = "/dashboard/";
+            if (document.getElementById('contactChoice1').checked) { 
+                window.location.href=base.concat("deposit/","{{user}}","/","{{acc_num}}","/",contact);
+            }
+            else {
+                window.location.href=base.concat("withdraw/","{{user}}","/","{{acc_num}}","/",contact);
+            }
+        }
+    </script>
+    <fieldset>
+        <legend>Deposit/Withdraw</legend>
+        <div class="container">
+            <label for="amountw"><b>Amount:</b></label>
+            <input type="text" placeholder="Enter The Amount" name = "amountw" Id="amountw" required>
+        </div>
+        <div>
+            <input type="radio" id="contactChoice1" name="contact" value="deposit" />
+            <label for="contactChoice1">Deposit</label>
+            <br>
+            <input type="radio" id="contactChoice2" name="contact" value="withdraw" />
+            <label for="contactChoice2">Withdraw</label>
+        </div>
+        <div>
+            <a Id = "goto" href = "#" onclick="sub()"> Submit </a>
+        </div>
+
+    </fieldset>
+
+    <fieldset>
+        <legend>Other Actions</legend>
+        <script language="JavaScript">
+            function pay() {
+                    window.location.href="/dashboard/interest_payment/{{user}}";
+                }
+        </script>
+        <div>
+            <a Id = "pii" href = "#" onclick="pay()"> Payment Interest </a>
+            <br>
+            <!-- if employee<br> <a href=""> Update Balances </a> -->
+            <script language="JavaScript">
+                function newb() {
+                        window.location.href="/dashboard/new_balances/{{user}}";
+                    }
+            </script>
+            <a Id = "nb" href = "#" onclick="newb()"> New Balances </a>
+        </div>
+    </fieldset>
+
+    <a href={% url 'home' %}> Log Out </a>
+
+{% endblock %}

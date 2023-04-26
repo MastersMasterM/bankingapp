@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up Page{% endblock title %}
+{% block content %}
+    <h1>Sign Up</h1>
+    <form action = "" method = "POST">
+        {% csrf_token %}
+    <div class="container">
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="psw" required>
+        
+        <label for="f_name"><b>First Name</b></label>
+        <input type="text" placeholder="Enter First Name" name="f_name" required>
+        
+        <label for="l_name"><b>Last Name</b></label>
+        <input type="text" placeholder="Enter Last Name" name="l_name" required>
+
+        <label for="national_ID"><b>National ID</b></label>
+        <input type="text" placeholder="Enter 10 Digits" name="national_ID" minlength="10" maxlength="10" required>
+
+        <label for="dof"><b>Date of Birth</b></label>
+        <input type="date" placeholder="Enter Date of Birth" name="dof" required>
+
+        <fieldset>
+            <legend>Please select your type:</legend>
+            <div>
+              <input type="radio" id="contactChoice1" name="contact" value="client" />
+              <label for="contactChoice1">Client</label>
+        
+              <input type="radio" id="contactChoice2" name="contact" value="employee" />
+              <label for="contactChoice2">Employee</label>
+            </div>
+        </fieldset>
+        <label for="ir"><b>Interest Rate</b></label>
+        <input type="text" placeholder="Enter Your Interest Rate" name="ir" required>
+        <div>
+        <button type="submit">Sign Up</button>
+        </div>
+      </div>
+    </form>
+{% endblock %}
