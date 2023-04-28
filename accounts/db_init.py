@@ -9,6 +9,7 @@ with conn.cursor() as curs:
     curs.execute("""
     CREATE TYPE job AS ENUM ('client', 'employee');
     CREATE TYPE a_type AS ENUM ('deposit', 'withdraw', 'transfer', 'interest');
+    CREATE SEQUENCE snapshot_log_seq;
 
     CREATE TABLE account(
         username text PRIMARY KEY,
@@ -53,7 +54,7 @@ with conn.cursor() as curs:
     );
 
     CREATE TABLE snapshot_log(
-        snapshot_id serial NOT NULL UNIQUE,
+        snapshot_id INTEGER NOT NULL DEFAULT nextval('snapshot_log_seq') UNIQUE,
         snapshot_timestamp TIMESTAMP NOT NULL
     );
     """)
@@ -67,7 +68,7 @@ CREATE EXTENSION pgcrypto;
 CREATE OR REPLACE FUNCTION generate_user_id() RETURNS TRIGGER AS $$
 DECLARE r_s text;
 BEGIN
-	r_s = (Select crypt('a', gen_salt('des')));
+	r_s = (SELECT regexp_replace(crypt('a', gen_salt('md5')),'[^a-zA-Z0-9]','','g'));
     NEW.username := CONCAT(NEW.last_name,r_s);
     NEW.accountnumber := LPAD(FLOOR(RANDOM()*999999999999999)::text,16,'1');
     NEW.password = md5(NEW.password);
@@ -241,32 +242,26 @@ begin
 end;$$;
 
 
---Create a log in snapshot_log
-CREATE OR REPLACE FUNCTION slog() RETURNS INT AS $$
-DECLARE lsid INT;
-BEGIN
-    lsid = (SELECT snapshot_id FROM snapshot_log ORDER BY snapshot_id DESC LIMIT 1);
-    INSERT INTO snapshot_log
-    VALUES(lsid + 1,NOW());
-    RETURN lsid;
-END;
-$$ LANGUAGE plpgsql;
-
 --Create snapshot_[id] table
 CREATE OR REPLACE FUNCTION copy_log() RETURNS TRIGGER AS $$
-DECLARE NUM text;
+DECLARE NUM INT;
 DECLARE tablename text;
 BEGIN
-    NUM = slog()::text;
-	tablename = (SELECT CONCAT('snapshot_',NUM));
-	RAISE NOTICE '%',tablename;
-	create table IF NOT EXISTS tablename (
+    NUM = (SELECT snapshot_id FROM snapshot_log ORDER BY snapshot_id DESC LIMIT 1) + 1;
+	
+    tablename = (SELECT CONCAT('snapshot_',NUM));
+	
+	EXECUTE 'CREATE TABLE IF NOT EXISTS '||tablename||' (
 		accountNumber CHAR (16) NOT NULL UNIQUE,
         amount INT NOT NULL
-	);
-    INSERT INTO tablename
-        VALUES(NEW.accountnumber,NEW.amount);
-    
+	);';
+    EXECUTE 'INSERT INTO '||tablename||' (accountNumber,amount)
+    SELECT $1.accountnumber,$2.amount
+	WHERE NOT EXISTS(
+		SELECT accountNumber FROM '||tablename||' WHERE accountNumber = $1.accountnumber
+	)'
+	USING NEW,OLD;
+	
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

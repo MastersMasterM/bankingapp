@@ -17,13 +17,18 @@ def login(request):
         password = request.POST['psw']
         with conn.cursor() as curs:
             curs.execute(f"call login('{password}','{username}');")
-            notice = conn.notices[0]
-            if notice == 'NOTICE:  Successful\n':
+            notice = conn.notices[-1]
+            notice = notice.replace('NOTICE:  ',"")
+            notice = notice.replace('\n',"")
+            print(f"1: {conn.notices}")
+            if notice == 'Successful':
                 curs.execute('commit')
                 return HttpResponseRedirect(reverse("dashboard",args=[username]))
-            elif notice == 'NOTICE:  Password is wrong\n':
+            elif notice == 'Password is wrong':
+                print("WHAT THE HELL PASS")
                 return HttpResponseRedirect(reverse('login'))
             else:
+                print("WHAT THE HELL")
                 return HttpResponseRedirect(reverse('login'))
     else:
         return render(request,'accounts/login.html')
@@ -40,7 +45,8 @@ def signup(request):
         ir = request.POST['ir']
         with conn.cursor() as curs:
             curs.execute(f"call register('{password}','{f_name}','{l_name}','{national_ID}','{dof}','{type}','{ir}');")
-            notice = conn.notices[0]
+            notice = conn.notices[-1]
+            print(f"2: {conn.notices}")
             if notice == 'NOTICE:  Your Age is less than 13\n':
                 return HttpResponse(notice)
             else:
@@ -56,14 +62,12 @@ def signup(request):
  
 def dashboard(request,user):
     with conn.cursor() as curs:
-        curs.execute(f"SELECT accountnumber,first_name,last_name FROM account WHERE username = '{user}';")
-        res = curs.fetchone()
-    with conn.cursor() as curs:
-        curs.execute(f"SELECT accountnumber,first_name,last_name FROM account WHERE username = '{user}';")
+        curs.execute(f"SELECT accountnumber,first_name,last_name,u_type FROM account WHERE username = '{user}';")
         res = curs.fetchone()
     account_num = res[0]
     f_name = res[1]
     l_name = res[2]
+    t_u = res[3]
     with conn.cursor() as curs:
         curs.execute(f"""SELECT amount FROM latest_balances 
                  WHERE accountnumber = '{account_num}' """)
@@ -73,7 +77,8 @@ def dashboard(request,user):
         'f_name': f_name,
         'l_name': l_name,
         'acc_num': account_num,
-        'balance': balance
+        'balance': balance,
+        'user_type': t_u
     })
 
 def deposit(request,user,acc_num,amount):
@@ -103,5 +108,8 @@ def interest_payment(request,user):
 def new_balances(request,user):
     with conn.cursor() as curs:
         curs.execute(f"call balances_update();")
+        curs.execute('commit')
+    with conn.cursor() as curs:
+        curs.execute(f"INSERT INTO snapshot_log(snapshot_timestamp) VALUES(NOW());")
         curs.execute('commit')
     return HttpResponseRedirect(reverse('dashboard',args=[user]))

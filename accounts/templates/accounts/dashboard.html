@@ -74,13 +74,14 @@
         <div>
             <a Id = "pii" href = "#" onclick="pay()"> Payment Interest </a>
             <br>
-            <!-- if employee<br> <a href=""> Update Balances </a> -->
+            {% if user_type == 'employee' %}
             <script language="JavaScript">
                 function newb() {
                         window.location.href="/dashboard/new_balances/{{user}}";
                     }
             </script>
-            <a Id = "nb" href = "#" onclick="newb()"> New Balances </a>
+            <a Id = "nb" href = "#" onclick="newb()"> Update Balances </a>
+            {% endif %}
         </div>
     </fieldset>
 
