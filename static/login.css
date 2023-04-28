@@ -41,7 +41,7 @@ ul {
     display:grid;
     flex-direction: column;
     flex-wrap: wrap;
-    height: 25rem;
+    height: 30rem;
     background-color: black;
 }
 
@@ -50,4 +50,8 @@ li{
     text-align: center;
     font-size: 2rem;
     padding-bottom: 1rem;
+}
+.alert 
+{
+    color: aqua;
 }

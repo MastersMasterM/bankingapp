@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect,HttpResponse
 from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
+from django.contrib import messages
 from django.urls import reverse
 import psycopg2
 
@@ -25,9 +26,11 @@ def login(request):
                 curs.execute('commit')
                 return HttpResponseRedirect(reverse("dashboard",args=[username]))
             elif notice == 'Password is wrong':
+                messages.error(request, 'Wrong Password')
                 print("WHAT THE HELL PASS")
                 return HttpResponseRedirect(reverse('login'))
             else:
+                messages.error(request, 'User doesnt exist')
                 print("WHAT THE HELL")
                 return HttpResponseRedirect(reverse('login'))
     else:
@@ -48,7 +51,8 @@ def signup(request):
             notice = conn.notices[-1]
             print(f"2: {conn.notices}")
             if notice == 'NOTICE:  Your Age is less than 13\n':
-                return HttpResponse(notice)
+                messages.error(request, 'Your Age is less than 13')
+                return HttpResponseRedirect(reverse('signup'))
             else:
                 curs.execute("commit")
                 notice = notice.replace('NOTICE:  ',"")
