@@ -11,7 +11,7 @@ with conn.cursor() as curs:
     CREATE TYPE a_type AS ENUM ('deposit', 'withdraw', 'transfer', 'interest');
 
     CREATE TABLE account(
-        username VARCHAR (20) PRIMARY KEY,
+        username text PRIMARY KEY,
         accountNumber CHAR (16) UNIQUE NOT NULL,
         password VARCHAR (50) NOT NULL,
         first_name text NOT NULL,
@@ -23,7 +23,7 @@ with conn.cursor() as curs:
     );
 
     CREATE TABLE login_log(
-        username VARCHAR (20) NOT NULL,
+        username text NOT NULL,
         login_time TIMESTAMP NOT NULL,
         CONSTRAINT login_log_username_fkey FOREIGN KEY (username)
           REFERENCES account (username) MATCH SIMPLE
@@ -75,9 +75,12 @@ with conn.cursor() as curs:
     --Register
 
 --Function That Generates a hash string based on firstname and lastname as username and generate accountnumber
+CREATE EXTENSION pgcrypto;
 CREATE OR REPLACE FUNCTION generate_user_id() RETURNS TRIGGER AS $$
+DECLARE r_s text;
 BEGIN
-    NEW.username := substring(md5(CONCAT(NEW.first_name,NEW.last_name)),1,20);
+	r_s = (Select crypt('a', gen_salt('des')));
+    NEW.username := CONCAT(NEW.last_name,r_s);
     NEW.accountnumber := LPAD(FLOOR(RANDOM()*999999999999999)::text,16,'1');
     NEW.password = md5(NEW.password);
     RETURN NEW;
