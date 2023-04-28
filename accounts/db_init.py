@@ -56,18 +56,6 @@ with conn.cursor() as curs:
         snapshot_id serial NOT NULL UNIQUE,
         snapshot_timestamp TIMESTAMP NOT NULL
     );
-
-    CREATE TABLE snapshot_id(
-      id INT NOT NULL,
-      accountNumber CHAR (16) NOT NULL,
-      amount INT NOT NULL,
-      CONSTRAINT id_log_fkey FOREIGN KEY (id)
-          REFERENCES snapshot_log (snapshot_id) MATCH SIMPLE
-          ON UPDATE NO ACTION ON DELETE NO ACTION,
-      CONSTRAINT accnum_lbal_fkey FOREIGN KEY (accountNumber)
-          REFERENCES latest_balances (accountNumber) MATCH SIMPLE
-          ON UPDATE NO ACTION ON DELETE NO ACTION    
-    );
     """)
     print(curs.statusmessage)
     curs.execute('commit')
@@ -253,25 +241,32 @@ begin
 end;$$;
 
 
---Copy data to snapshot_log
-CREATE OR REPLACE FUNCTION slog() RETURNS VOID AS $$
+--Create a log in snapshot_log
+CREATE OR REPLACE FUNCTION slog() RETURNS INT AS $$
 DECLARE lsid INT;
 BEGIN
     lsid = (SELECT snapshot_id FROM snapshot_log ORDER BY snapshot_id DESC LIMIT 1);
     INSERT INTO snapshot_log
     VALUES(lsid + 1,NOW());
-    RETURN;
+    RETURN lsid;
 END;
 $$ LANGUAGE plpgsql;
 
---Copy data to snapshot_id
+--Create snapshot_[id] table
 CREATE OR REPLACE FUNCTION copy_log() RETURNS TRIGGER AS $$
-DECLARE lsid INT;
+DECLARE NUM text;
+DECLARE tablename text;
 BEGIN
-    PERFORM slog();
-    lsid = (SELECT snapshot_id FROM snapshot_log ORDER BY snapshot_id DESC LIMIT 1);
-    INSERT INTO snapshot_id
-    VALUES(lsid,NEW.accountnumber,NEW.amount);
+    NUM = slog()::text;
+	tablename = (SELECT CONCAT('snapshot_',NUM));
+	RAISE NOTICE '%',tablename;
+	create table IF NOT EXISTS tablename (
+		accountNumber CHAR (16) NOT NULL UNIQUE,
+        amount INT NOT NULL
+	);
+    INSERT INTO tablename
+        VALUES(NEW.accountnumber,NEW.amount);
+    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -297,6 +292,7 @@ end;$$;
     """)
     print(curs.statusmessage)
     curs.execute('commit')
+    
     curs.execute("""
     --Inserting Dummy Variable Into Snapshot Log
     INSERT INTO snapshot_log VALUES('0',NOW());
