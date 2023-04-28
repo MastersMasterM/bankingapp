@@ -297,3 +297,8 @@ end;$$;
     """)
     print(curs.statusmessage)
     curs.execute('commit')
+    curs.execute("""
+    --Inserting Dummy Variable Into Snapshot Log
+    INSERT INTO snapshot_log VALUES('0',NOW());
+    """)
+    curs.execute('commit')
