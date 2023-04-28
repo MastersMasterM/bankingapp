@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css_file %}
+<link rel="stylesheet" href="{% static 'dashboard.css' %}">
+{% endblock css_file %}
+
 {% block title %}Panel{% endblock title %}
 
 {% block content %}
@@ -81,6 +87,8 @@
                     }
             </script>
             <a Id = "nb" href = "#" onclick="newb()"> Update Balances </a>
+            {% else %}
+            <a Id = "nb" href = "{{user}}"> Check New Balance </a>
             {% endif %}
         </div>
     </fieldset>

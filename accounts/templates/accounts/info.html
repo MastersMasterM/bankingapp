@@ -1,4 +1,28 @@
 {% extends 'base.html' %}
+{% block css_file %}
+<style>
+body
+{
+    text-align: center;
+    color : blueviolet;
+}
+h1
+{
+    font-size: 2rem;
+}
+a
+{
+    text-decoration: none;
+    font-size: 2rem;
+    color:darkblue;
+}
+a:hover , a:active
+{
+    color: red;
+}
+</style>
+{% endblock css_file %}
+
 {% block title %}Info{% endblock title %}
 {% block content %}
 <h1>Your Account Information</h1>

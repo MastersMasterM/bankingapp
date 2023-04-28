@@ -1,0 +1,29 @@
+body
+{
+    margin: 0%;
+    background-color: whitesmoke;
+    font-size: 1.5rem;
+}
+h1
+{
+    text-align: center;
+    color : blueviolet;
+    font-size: 3rem;
+}
+
+h2,h3
+{
+    text-align: center;
+    color : blueviolet;
+    font-size: 2rem;
+}
+a
+{
+    text-decoration: none;
+    font-size: 2rem;
+    color:darkblue;
+}
+a:hover , a:active
+{
+    color: red;
+}

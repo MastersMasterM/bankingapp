@@ -1,0 +1,40 @@
+body
+{
+    margin: 0%;
+    background-color: blueviolet;
+}
+#title h1{
+    text-align: center;
+    color : whitesmoke;
+    font-size: 3rem;
+}
+
+ul {
+    list-style: none;
+    margin: 2rem auto;
+    max-width: 20rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.26);
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 14rem;
+    background-color: white;
+}
+
+li{
+    margin: 1rem;
+    text-align: center;
+    font-size: 2rem;
+    padding-bottom: 1rem;
+}
+
+li a{
+    text-decoration: none;
+    color: chocolate;
+}
+
+li a:hover, li a:active{
+    color: purple;
+}

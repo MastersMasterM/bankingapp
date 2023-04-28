@@ -1,9 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block css_file %}
+<link rel="stylesheet" href="{% static 'index.css' %}">
+{% endblock css_file %}
+
 {% block title %}Welcome{% endblock title %}
 {% block content %}
+<section id ="title">
 <h1>Welcome to our banking application</h1>
-<a href={% url 'login' %}>Login</a>
-<br>
-<br>
-<a href={% url 'signup' %}>Sign Up</a>
+</section>
+
+<section id ="logsign">
+    <ul>
+        <li><a href={% url 'login' %}>Login</a></li>
+        <li><a href={% url 'signup' %}>Sign Up</a></li>
+    </ul>
+</section>
 {% endblock content %}
