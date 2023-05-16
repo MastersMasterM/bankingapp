@@ -1,6 +1,6 @@
 In this project psycopg2 is used for intracting with PostgreSQL
 
-0.Change <<psycopg2.connect(dbname="test", user="postgres", password="ma1379?")>> in
+0.Change <<psycopg2.connect(dbname="test", user="postgres", password="")>> in
 
 	accounts/db_init.py
 	accounts/views.py
