@@ -31,5 +31,6 @@ This project is an event-driven banking database implemented in PostgreSQL and i
 
 ## Installation
 
-1- Clone this repo
-2- Read the 'Readme.txt'
+
+1. Clone this repo
+2. Read the 'Readme.txt'
